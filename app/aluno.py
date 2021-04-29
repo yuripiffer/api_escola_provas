@@ -1,101 +1,68 @@
-
+from database.db_aluno import DbAluno
 
 class Aluno():
 
-    def listar_provas(id_aluno):
-        """
-        API GET - passar o /id_aluno/ na rota para acessar a info
+    def listar_provas(self, id_aluno):
+        if not DbAluno.does_id_aluno_exist(id_aluno):
+            return "Id não existe ou informado incorretamente."
+        dados_provas = DbAluno.retonra_provas_existentes()
+        if not dados_provas:
+            return "Falha no carregamento das provas (banco de dados)."
 
-        VALIDAÇÃO
-        checar se id_aluno existe, caso contrário retorna uma mensagem de
-        que não é possível acessar tais informaões
-
-        BUSCA NO BANCO DE DADOS
-        puxa da pasta database (de alunos ou escola???) para aqui o dicionário de provas existentes
-        - id_prova
-        - titulo_prova
-        Caso o dict nao seja vazio
-        cria uma string com as provas cadastradas
-
-        :param id_aluno: int
-        :return:string com provas cadastradas
-        """
+        # MANIPUlar dados_provas para apresentar na front
+            #return string com provas cadastradas
         pass
 
-    def listar_questoes_prova(id_aluno, id_prova):
-        """
-        API GET - passar o /id_aluno/id_prova/ rota para acessar a info
+    def listar_informacoes_prova(self, id_aluno, id_prova):
+        if not DbAluno.does_id_aluno_exist(id_aluno):
+            return "O id_aluno não existe ou informado incorretamente."
+        if not DbAluno.does_id_prova_exist(id_prova):
+            return "Prova inexistente ou id informado incorretamente."
 
-        VALIDAÇÃO
-        checar se id_aluno existe, caso contrário retorna uma mensagem de erro
-        checar se id_prova existe, caso contrário retorna uma mensagem de erro
+        lista_info = DbAluno.buscar_info_prova(id_prova)
+        titulo_prova =  lista_info[0]
+        total_perguntas = lista_info[1]
+        return f"id_prova = {id_prova} " \
+               f"\nTítulo da prova: {titulo_prova} " \
+               f"\nTotal de perguntas: {total_perguntas}"
 
-        BUSCA NO BANCO DE DADOS
-        puxa pela pasta database (database.aluno ou database.escola) o dicionário da prova com dicionário das questões
+    def realizar_prova(self, dict_respostas):
+        id_aluno = dict_respostas["id_aluno"]
+        id_prova = dict_respostas["id_prova"]
+        lista_respostas = dict_respostas["lista_respostas"]
 
-        manipula esse dicionário para retonar um texto do tipo
-        texto_alternativas =
-        '''id_prova: FISI02
-        Questão 1 - Alternativas: A, B, C
-        Questão 2 - Alternativas: 2 - 1, 2, 3, 4, 5 ...'''
+        if not DbAluno.does_id_aluno_exist(id_aluno):
+            return "O id_aluno não existe ou informado incorretamente."
+        if not DbAluno.does_id_prova_exist(id_prova):
+            return "Prova inexistente ou id informado incorretamente."
 
-        :param id_aluno:
-        :param id_prova:
-        :return: texto_alternativas
-        """
-        pass
+        dict_prova_cadastrada = DbAluno.retornar_prova_cadastrada(id_prova)
+        if not dict_prova_cadastrada:
+            return "Falha no carregamento dos dados do gabarito da prova (banco de dados)"
 
-    def realizar_prova(id_aluno, id_prova, prova_respostas):
-        """
-        API POST - passar o /id_aluno/id_prova/ rota para acessar a info
+        lista_alternativas = dict_prova_cadastrada["lista_alternativas"]
+        lista_pesos = dict_prova_cadastrada["lista_pesos"]
 
-        VALIDAÇÃO
-        checar se id_aluno existe, caso contrário retorna uma mensagem de erro
-        checar se id_prova existe, caso contrário retorna uma mensagem de erro
+        if len(lista_respostas) != len(lista_alternativas):
+            return f"Diferença no total de alternativas respondidas ({len(lista_respostas)}) " \
+                   f"e total de questões cadastradas ({len(lista_alternativas)})!!"
+        if len(lista_alternativas) != len(lista_pesos):
+            return "Problemas com os dados cadastrados da prova!! Total de questões e total" \
+                   "de pesos diferentes."
 
-        RECEBIMENTO DO CORPO
-        Recebe um prova_respostas do tipo:
-        prova_respostas = {
-        "id_prova":"FISI02",
-        "1":"C",
-        "2":"B"
-        }
+        nota = self.calcula_nota(lista_alternativas,lista_respostas,lista_pesos)
 
-        Checa se em provas_respostas existem keys de todas as questões e se há values nelas (mesmo que vazio)
-        CASO NÃO:
-            Se não foram, precisa retonar uma mensagem de erro e não persistir.
-        CASO SIM:
-            FUNÇÃO QUE DEVERÁ ESTAR NO database.aluno:
-            passa esse dicionário prova_respostas que recebeu para a função que estará no database.aluno
-            Armazena no db de provas_realizadas
-            | id_prova | id_aluno | dict_passado | nota
+        mensagem = f"LANÇAMENTO DE NOTA\n Id_prova: {id_prova}:" \
+                   f"\nId_aluno(a): {id_aluno}\nNota: {nota}\n"
 
-        Cálculo de nota:
-            CHAMA do database.aluno a função que traz o dict prova_cadastrada com as respostas corretas , ex:
+        if DbAluno.persistir_nota_aluno(id_aluno, id_prova, lista_respostas, nota):
+            mensagem += "Dados armazenados com sucesso."
+        return mensagem
 
-        prova_cadastrada = {
-        "id_prova":"FISI02",
-        "titulo_prova":"Física Newtoniana 02 - Prova parcial",
-            "1":{
-        "Alternativas":["A", "B", "C", "D","E"],
-        "Resposta correta": "A",
-        "Peso": "3.5"},
-            "2":{
-        "Alternativas":["A", "B", "C", "D","E"],
-        "Resposta correta": "C",
-        "Peso": "5"},
-            "3":{
-        "Alternativas":["A", "B", "C"],
-        "Resposta correta": "B",
-        "Peso": "1.5"}
-        }
 
-        nota_aluno = 0.0
-        compara para as mesmas keys de prova_respostas e prova_cadastrada
-        IF prova_respostas[key] == prova_cadastrada[key]["Resposta correta"]:
-            nota_aluno += prova_cadastrada[key]["Peso"]
-
-        Persiste a nota no db de provas_realizadas
-        retonra para o aluno a nota.
-        """
-        pass
+    def calcula_nota(self,lista_alternativas,lista_respostas,lista_pesos):
+        nota = 0.0
+        for i in range(len(lista_alternativas)):
+            if lista_respostas[i] == lista_alternativas[0]:
+                nota += lista_pesos[i]
+        return nota
