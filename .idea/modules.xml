@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/api_escola_provas.iml" filepath="$PROJECT_DIR$/.idea/api_escola_provas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../api_score/.idea/api_score.iml" filepath="$PROJECT_DIR$/../api_score/.idea/api_score.iml" />
+    </modules>
+  </component>
+</project>
