@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\database\db_aluno.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

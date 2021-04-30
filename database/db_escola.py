@@ -1,4 +1,5 @@
 import pymongo
+import pandas as pd
 
 class DbEscola():
 
@@ -9,18 +10,22 @@ class DbEscola():
         self.cadastro_provas_genesis = self.db['cadastro_provas_genesis']
         self.provas_realizadas_genesis = self.db['provas_realizadas_genesis']
 
-    def valida_nome_aluno(self, nome):
+    def valida_nome_aluno(self, nome) -> str:
         """
-        checa se não é nulo
-        transforma em upper
-        retorna false se não houver no banco
-        returna o nome manipulado se puder ser colocado no banco
-        :return: nome (ou erro)
+        :return: nome validado, upper e inexistente no banco e upper OU False
         """
+        if len(nome) == 0: #CHECAR SE NÃO É STRING TAMBÉM
+            return False
+        nome = nome.upper()
+        resultado = self.alunos_genesis.find({'nome':nome})
+        resultado = resultado.count()
+        if resultado > 0:
+            return False
         return nome
 
-    def valida_data_nascimento(self, data_nascimento):
+    def valida_data_nascimento(self, data_nascimento) -> str:
         """
+        AINDA PRECISA FAZER
         checa se não é nulo
         transforma no formato correto
         checa se não é hoje
@@ -28,58 +33,51 @@ class DbEscola():
         """
         return data_nascimento
 
-    def existe_id_aluno(self, id_aluno):
-        # se já existe
-        #     return True
-        # se não:
-        #     return False
-        pass
-
-    def persistir_aluno(self, dict_matricula):
-        #recebe
-        # {
-        #     "nome" = "FULANINHO",
-        #     "id_aluno" = "2021YU231",
-        #     "data_nascimento" = "04/10/1991"
-        # }
-
-        # se persistir:
-        #     return True
-        # se não:
-        #     return False
-        pass
-
-
-    def retornar_alunos(self):
-        """
-        retonra os dados de todos os alunos do db
-        se conseguir:
-            return arquivo_alunos (não sei qual o formato que vai voltar)
-        se tiver problema:
-            return False
-        :return:
-        """
-
-    def valida_id_prova(self, id_prova):
-        """
-        id_prova = id_prova.upper()[0:8] ----> (recorta a string em 8)
-        chega se a prova já existe no banco de dados
-        se existe:
-            return False
-        se nao existe:
-            return id_prova
-        :return: id_prova ou False
-        """
-        pass
-
-    def persistir_prova_cadastrada(self, lista_dados):
-        """
-        recebe:
-        [id_prova, titulo_prova, total_perguntas, lista_alternativas, lista_pesos ]
-        Persiste no banco
-        if CORRER TUDO BEM:
+    def does_id_aluno_exist(self, id_aluno) -> bool:
+        resultado = self.alunos_genesis.find({'id_aluno':id_aluno})
+        resultado = resultado.count()
+        if resultado > 0:
             return True
-        else:
-            return False
+
+    def persistir_aluno(self, dict_matricula) -> bool:
+        executa = self.alunos_genesis.insert_one(dict_matricula)
+        if executa.inserted_id: #vÊ se realmente conseguiu
+            return True
+
+    def retornar_alunos(self) -> dict:
         """
-        pass
+        :return: json dos alunos
+        """
+        resultado = self.alunos_genesis.find({})
+        dict_dados = pd.DataFrame(resultado)
+        #o astype(str) é para evitar dar pau
+        dict_dados = dict_dados.astype(str).to_json(orient="records")
+        return dict_dados
+
+    def valida_id_prova(self, id_prova) -> str:
+        """
+        :return: id_prova em upper com 8 char ou False
+        """
+        id_prova = id_prova.upper()[0:8]
+        resultado = self.cadastro_provas_genesis.find({'id_prova':id_prova})
+        resultado = resultado.count()
+        if resultado > 0:
+            return False
+        else:
+            return id_prova
+
+    def persistir_prova_cadastrada(self, dict_dados) -> bool:
+        executa = self.cadastro_provas_genesis.insert_one(dict_dados)
+        if executa.inserted_id:  # vÊ se realmente conseguiu
+            return True
+
+
+
+
+
+
+
+# DbEscola().persistir_aluno({"id_aluno":"2021LI111",
+#                             "nome":"LIVIA DELGADO",
+#                             "data_nascimento":"01/01/2000"})
+#DbEscola().persistir_prova_cadastrada(["QUIM001", "Química 3",2, ["B","B"],[4,6]])

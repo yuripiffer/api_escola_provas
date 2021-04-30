@@ -10,57 +10,61 @@ class DbAluno():
         self.cadastro_provas_genesis = self.db['cadastro_provas_genesis']
         self.provas_realizadas_genesis = self.db['provas_realizadas_genesis']
 
-    def does_id_aluno_exist(self, id_aluno):
-        """
-        Checa no banco de dados se esse id_aluno existe ou não
-        :param id_aluno:
-        :return: bool
-        """
+    def does_id_aluno_exist(self, id_aluno) -> bool:
         resultado = self.alunos_genesis.find({'id_aluno':id_aluno})
-        print(pd.DataFrame(resultado))
+        resultado = resultado.count()
+        if resultado > 0:
+            return True
 
+    def retonra_provas_existentes(self) -> dict:
+        resultado = self.cadastro_provas_genesis.find({})
+        df = pd.DataFrame(resultado)
+        dict_info = df[["id_prova", "titulo_prova"]].to_json(orient="records")
+        return dict_info
 
+    def does_id_prova_exist(self, id_prova) -> bool:
+        resultado = self.cadastro_provas_genesis.find({'id_prova':id_prova})
+        resultado = resultado.count()
+        if resultado > 0:
+            return True
 
-    def retonra_provas_existentes(self):
+    def buscar_info_prova(self, id_prova) -> list:
         """
-        Vai no banco de dados e retorna as provas existentes
-        COMO RETORNA ESSES DADOS??
-        :return: dict,
+        :return: ex: ['HIST003', 'História da Arte - Barroco Italiano', 3.0]
         """
+        resultado = self.cadastro_provas_genesis.find({"id_prova":id_prova})
+        df = pd.DataFrame(resultado)
+        lista_info = df[["id_prova", "titulo_prova", "total_perguntas"]].values.tolist()
+        return lista_info[0]
 
-    def does_id_prova_exist(self, id_escola):
-        """
-        Checa no db se id_escola existe
-        :return: bool
-        """
-    def buscar_info_prova(self, id_prova):
-        """
-        Busca no db o titulo_prova e total de perguntas da prova
-        :return: ["titulo_prova", "total_perguntas"] ou False
-        """
-
-    def retornar_prova_cadastrada(self, id_prova):
-        """
-        retorna
-            {"cadastro_prova" = {
-            "id_prova" = "HIST034",
-            "titulo_prova" = "Historia da Arte 2",
-            "lista_alternativas" = ["A", "C", "B", "A"]
-            "lista_pesos" = [1.5,3,3,2.5],
-            "total_perguntas" = 4
-            }
-        :param id_prova:
-        :return:
-        """
-        pass
-
-    def persistir_nota_aluno(self, id_aluno, id_prova, lista_respostas, nota):
-        #armazenar
-        # se conseguir, return True
-        # se não conseguir, return False
-
-        pass
+    def persistir_nota_aluno(self, id_aluno, id_prova, lista_respostas, nota) -> bool:
+        executa = self.provas_realizadas_genesis.insert_one({
+            "id_aluno":id_aluno,
+            "id_prova":id_prova,
+            "lista_respostas":lista_respostas,
+            "nota":nota
+        })
+        if executa.inserted_id:
+            return True
 
 
 
-DbAluno().does_id_aluno_exist("2021JO458")
+    def retornar_prova_cadastrada(self, id_prova) -> dict:
+        resultado = self.cadastro_provas_genesis.find_one({"id_prova":id_prova})
+        df = pd.DataFrame(resultado)
+        dict_info = df[["lista_alternativas","lista_pesos"]]
+        return dict_info
+
+
+
+
+
+#DbAluno().does_id_aluno_exist("2021JO458")
+#DbAluno().does_id_prova_exist("HIST003")
+#resultado = DbAluno().retonra_provas_existentes()
+
+resultado = DbAluno().retonra_provas_existentes()
+print(resultado)
+#print(teste)
+#DbAluno().persistir_nota_aluno("2021JO243", "GEOG001", ["C","C","B"], 10.0)
+
