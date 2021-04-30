@@ -1,8 +1,13 @@
-
+import pymongo
 
 class DbEscola():
 
-    #monta conexão com o db e collection correta
+    def __init__(self):
+        self.conn = pymongo.MongoClient("mongodb://localhost:27017/")
+        self.db = self.conn['escola_genesis']
+        self.alunos_genesis = self.db['alunos_genesis']
+        self.cadastro_provas_genesis = self.db['cadastro_provas_genesis']
+        self.provas_realizadas_genesis = self.db['provas_realizadas_genesis']
 
     def valida_nome_aluno(self, nome):
         """

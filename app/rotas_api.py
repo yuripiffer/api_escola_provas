@@ -3,7 +3,13 @@ from app.escola import Escola
 from app.aluno import Aluno
 import json
 
+
+def valida_chave_escola(chave_escola):
+    pass
+
+
 app = Flask(__name__)
+
 
 @app.route("/", methods=["GET"])
 def index():
@@ -15,7 +21,8 @@ def post_matricula(chave_escola):
     :param chave_escola:
     :return: str com mensagem de sucesso + id_aluno ou Erro
     """
-    #CHECAR CHAVE DA ESCOLA
+    if not valida_chave_escola(chave_escola):
+        return "Chave de escola inválida"
 
     raw_request = request.data.decode("utf-8")
     dict_matricula = json.loads(raw_request)
@@ -29,7 +36,8 @@ def get_listar_alunos(chave_escola):
     :param chave_escola:
     :return: str com listagem dos alunos ou Erro
     """
-    # CHECAR CHAVE DA ESCOLA
+    if not valida_chave_escola(chave_escola):
+        return "Chave de escola inválida"
 
     response = Escola.listar_alunos()
     return response
@@ -41,7 +49,8 @@ def post_cadastrar_prova(chave_escola):
     :param chave_escola:
     :return: str mensagem de cadastro com sucesso ou erro.
     """
-    # CHECAR CHAVE DA ESCOLA
+    if not valida_chave_escola(chave_escola):
+        return "Chave de escola inválida"
 
     raw_request = request.data.decode("utf-8")
     prova_cadastrada = json.loads(raw_request)
@@ -79,6 +88,7 @@ def post_realizar_prova(id_aluno):
 
     response = Aluno.realizar_prova(dict_respostas)
     return response
+
 
 
 

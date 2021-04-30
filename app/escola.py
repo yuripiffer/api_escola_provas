@@ -6,7 +6,8 @@ class Escola():
     def gerar_id_aluno(self, nome):
         while True:
             id_aluno = ""
-            #id_aluno = gerar o ano (tipo, 2020, 2021...)
+            #modificar essa inicialização do id DEPOIS
+            id_aluno = "2021"
             id_aluno += nome[0:2]
             id_aluno += random.randint(100,999)
             if not DbEscola.existe_id_aluno(id_aluno):

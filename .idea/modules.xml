@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../crud_conexao_db/.idea/Usando_DB.iml" filepath="$PROJECT_DIR$/../crud_conexao_db/.idea/Usando_DB.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/api_escola_provas.iml" filepath="$PROJECT_DIR$/.idea/api_escola_provas.iml" />
       <module fileurl="file://$PROJECT_DIR$/../api_score/.idea/api_score.iml" filepath="$PROJECT_DIR$/../api_score/.idea/api_score.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../crud_db_mongo/.idea/crud_db_mongo.iml" filepath="$PROJECT_DIR$/../crud_db_mongo/.idea/crud_db_mongo.iml" />
     </modules>
   </component>
 </project>

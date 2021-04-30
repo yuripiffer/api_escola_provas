@@ -1,7 +1,14 @@
+import pymongo
+import pandas as pd
+
 
 class DbAluno():
-
-    #monta conexão com o db e collection correta
+    def __init__(self):
+        self.conn = pymongo.MongoClient("mongodb://localhost:27017/")
+        self.db = self.conn['escola_genesis']
+        self.alunos_genesis = self.db['alunos_genesis']
+        self.cadastro_provas_genesis = self.db['cadastro_provas_genesis']
+        self.provas_realizadas_genesis = self.db['provas_realizadas_genesis']
 
     def does_id_aluno_exist(self, id_aluno):
         """
@@ -9,7 +16,10 @@ class DbAluno():
         :param id_aluno:
         :return: bool
         """
-        pass
+        resultado = self.alunos_genesis.find({'id_aluno':id_aluno})
+        print(pd.DataFrame(resultado))
+
+
 
     def retonra_provas_existentes(self):
         """
@@ -50,3 +60,7 @@ class DbAluno():
         # se não conseguir, return False
 
         pass
+
+
+
+DbAluno().does_id_aluno_exist("2021JO458")

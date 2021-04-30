@@ -2,5 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../crud_conexao_db" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../crud_db_mongo" vcs="Git" />
   </component>
 </project>
