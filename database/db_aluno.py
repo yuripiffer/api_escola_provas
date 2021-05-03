@@ -47,10 +47,10 @@ class DbAluno():
         if executa.inserted_id:
             return True
 
-
-
-    def retornar_prova_cadastrada(self, id_prova) -> dict:
+    def retornar_prova_cadastrada(self, id_prova) -> dict or bool:
         resultado = self.cadastro_provas_genesis.find_one({"id_prova":id_prova})
+        if resultado == None:
+            return False
         df = pd.DataFrame(resultado)
         dict_info = df[["lista_alternativas","lista_pesos"]]
         return dict_info
@@ -59,12 +59,16 @@ class DbAluno():
 
 
 
+#print(DbAluno().retornar_prova_cadastrada("MATE012"))
+
+
+
 #DbAluno().does_id_aluno_exist("2021JO458")
 #DbAluno().does_id_prova_exist("HIST003")
 #resultado = DbAluno().retonra_provas_existentes()
 
-resultado = DbAluno().retonra_provas_existentes()
-print(resultado)
+# resultado = DbAluno().retonra_provas_existentes()
+# print(resultado)
 #print(teste)
 #DbAluno().persistir_nota_aluno("2021JO243", "GEOG001", ["C","C","B"], 10.0)
 

@@ -10,7 +10,7 @@ class DbEscola():
         self.cadastro_provas_genesis = self.db['cadastro_provas_genesis']
         self.provas_realizadas_genesis = self.db['provas_realizadas_genesis']
 
-    def valida_nome_aluno(self, nome) -> str:
+    def valida_nome_aluno(self, nome) -> str or bool:
         """
         :return: nome validado, upper e inexistente no banco e upper OU False
         """
@@ -44,7 +44,7 @@ class DbEscola():
         if executa.inserted_id: #vÊ se realmente conseguiu
             return True
 
-    def retornar_alunos(self) -> dict:
+    def retornar_alunos(self) -> dict or str:
         """
         :return: json dos alunos
         """
@@ -54,7 +54,7 @@ class DbEscola():
         dict_dados = dict_dados.astype(str).to_json(orient="records")
         return dict_dados
 
-    def valida_id_prova(self, id_prova) -> str:
+    def valida_id_prova(self, id_prova) -> str or bool:
         """
         :return: id_prova em upper com 8 char ou False
         """
@@ -81,3 +81,4 @@ class DbEscola():
 #                             "nome":"LIVIA DELGADO",
 #                             "data_nascimento":"01/01/2000"})
 #DbEscola().persistir_prova_cadastrada(["QUIM001", "Química 3",2, ["B","B"],[4,6]])
+# DbEscola().persistir_aluno(dict(nome="LAURA FABIANO", data_nascimento="01/01/2010", id_aluno="2021LA444"))

@@ -36,7 +36,7 @@ class Aluno:
             return "Prova inexistente ou id informado incorretamente.", 400
 
         dict_prova_cadastrada = db_aluno.retornar_prova_cadastrada(id_prova)
-        if not dict_prova_cadastrada:
+        if dict_prova_cadastrada.empty:
             return "Falha no carregamento dos dados do gabarito da prova (banco de dados)", 400
 
         lista_alternativas = dict_prova_cadastrada["lista_alternativas"]
@@ -65,3 +65,6 @@ class Aluno:
             if lista_respostas[i] == lista_alternativas[0]:
                 nota += lista_pesos[i]
         return nota
+
+
+# Aluno().realizar_prova({"id_aluno":"2021FA558","id_prova":"MATE012","lista_respostas":["A","A","A","A"]})

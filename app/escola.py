@@ -47,15 +47,8 @@ class Escola:
 
     def cadastrar_prova(self, prova_cadastrada) -> tuple:
         """
-        RECEBIMENTO DO CORPO
-        Recebe o dicionário prova_cadastrada
-        {
-        "id_prova" = "HIST034",
-        "titulo_prova" = "Historia da Arte 2",
-        "lista_alternativas" = ["A", "C", "B", "A"]
-        "lista_pesos" = [1.5,3,3,2.5],
-        "total_perguntas" = 4
-        }
+        Checar como o dicionário é mandando lá
+        no rotas_api
         """
         id_prova = prova_cadastrada["id_prova"]
         titulo_prova = prova_cadastrada["titulo_prova"]
